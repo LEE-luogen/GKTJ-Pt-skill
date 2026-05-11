@@ -1,0 +1,4 @@
+interface:
+  display_name: "GKTJ-Pt-skill"
+  short_description: "Generate patient-facing questionnaire analysis reports with charts and docx output"
+  default_prompt: "Generate a patient-facing questionnaire analysis report from the uploaded survey data, including markdown, charts, and a Word document."
