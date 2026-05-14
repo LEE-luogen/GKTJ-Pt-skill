@@ -81,7 +81,7 @@ report_type: 患者端问卷调研分析报告
 
 ## 一、引言
 
-第一段引言, 包含"双引号"和(括号)。
+### 报告背景 第一段引言, 包含"双引号"和(括号)。
 
 第二段引言。
 
@@ -192,6 +192,7 @@ class TemplatePipelineTest(unittest.TestCase):
             self.assertNotIn("国开（天津）信息科技有限公司", all_text)
             self.assertNotIn("占比：", all_text)
             self.assertIn('第一段引言，包含“双引号”和（括号）。', all_text)
+            self.assertNotIn("### 报告背景", all_text)
             self.assertIn('建议一正文，包含“示例”提示。', all_text)
             self.assertIn("问卷收集时间为2026年5月1日至2026年5月31日，共发放问卷128份，回收有效问卷120份。", all_text)
             self.assertEqual(len(document.inline_shapes), 10)

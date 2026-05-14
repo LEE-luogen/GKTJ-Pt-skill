@@ -179,6 +179,14 @@ def parse_paragraphs(lines: list[str]) -> list[str]:
     return paragraphs
 
 
+def sanitize_intro_paragraph(text: str) -> str:
+    value = normalize_space(text)
+    value = re.sub(r"^#{1,6}\s+", "", value)
+    value = re.sub(r"^(报告背景|数据来源)\s*", "", value)
+    value = re.sub(r"^[：:、\-]\s*", "", value)
+    return normalize_space(value)
+
+
 def split_blocks(lines: list[str]) -> list[str]:
     return parse_paragraphs(lines)
 
@@ -214,6 +222,12 @@ def parse_markdown_content(path: Path) -> tuple[dict, dict]:
     current_item: dict | None = None
     current_summary_item: dict | None = None
 
+    def is_heading(title: str, patterns: list[str]) -> bool:
+        for pattern in patterns:
+            if re.fullmatch(pattern, title):
+                return True
+        return False
+
     def flush_item() -> None:
         nonlocal current_item
         if not current_item:
@@ -235,36 +249,36 @@ def parse_markdown_content(path: Path) -> tuple[dict, dict]:
         if heading:
             level = len(heading.group(1))
             title = normalize_space(heading.group(2))
-            if "引言" in title:
+            if is_heading(title, [r"引言", r"[一1]、引言"]):
                 flush_item()
                 flush_summary_item()
                 current_section = "introduction"
                 continue
-            if "数据信息分析" in title:
+            if is_heading(title, [r"数据信息分析", r"[二2]、数据信息分析"]):
                 flush_item()
                 flush_summary_item()
                 current_section = "data_analysis"
                 continue
-            if "反馈意见分析" in title:
+            if is_heading(title, [r"反馈意见分析", r"[三3]、反馈意见分析"]):
                 flush_item()
                 flush_summary_item()
                 continue
-            if "积极反馈" in title:
+            if is_heading(title, [r"积极反馈", r"3\.1\s+积极反馈", r"3\.1积极反馈"]):
                 flush_item()
                 flush_summary_item()
                 current_section = "positive_feedback"
                 continue
-            if "待改进反馈" in title:
+            if is_heading(title, [r"待改进反馈", r"3\.2\s+待改进反馈", r"3\.2待改进反馈"]):
                 flush_item()
                 flush_summary_item()
                 current_section = "negative_feedback"
                 continue
-            if "综合分析与建议" in title:
+            if is_heading(title, [r"综合分析与建议", r"[四4]、综合分析与建议"]):
                 flush_item()
                 flush_summary_item()
                 current_section = "summary"
                 continue
-            if "附件" in title:
+            if is_heading(title, [r"附件-问卷题目内容", r"[五5]、附件-问卷题目内容", r"附件"]):
                 flush_item()
                 flush_summary_item()
                 current_section = "attachment"
@@ -294,8 +308,10 @@ def parse_markdown_content(path: Path) -> tuple[dict, dict]:
     flush_item()
     flush_summary_item()
 
+    intro_paragraphs = [sanitize_intro_paragraph(p) for p in parse_paragraphs(intro_lines)]
+    intro_paragraphs = [p for p in intro_paragraphs if p]
     content = {
-        "introduction": parse_paragraphs(intro_lines),
+        "introduction": intro_paragraphs,
         "data_analysis": data_items,
         "positive_feedback": parse_label_body_blocks(pos_lines, "positive_feedback"),
         "negative_feedback": parse_label_body_blocks(neg_lines, "negative_feedback"),
@@ -322,7 +338,9 @@ def parse_jsonl_content(path: Path) -> tuple[dict, dict]:
         if line_type == "meta":
             meta.update({k: v for k, v in item.items() if k not in {"type", "section"}})
         elif line_type == "introduction":
-            content["introduction"].append(normalize_space(item["text"]))
+            value = sanitize_intro_paragraph(item["text"])
+            if value:
+                content["introduction"].append(value)
         elif line_type == "data_analysis":
             content["data_analysis"].append(
                 {
