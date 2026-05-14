@@ -6,8 +6,8 @@ A reusable skill for generating patient-facing questionnaire analysis reports wi
 - patient-viewpoint writing rules
 - restrained medical/pharmaceutical wording
 - script-built payload JSON from structured intermediate drafts
-- a migration path toward template-driven `.docx` rendering
-- Word native editable chart support as the target chart mode
+- body-only `.docx` rendering without a cover page
+- PNG chart images inserted into the report, one chart per question
 
 ## Structure
 
@@ -22,7 +22,7 @@ A reusable skill for generating patient-facing questionnaire analysis reports wi
 - `assets/`
   - Reserved for future static templates or visual assets; current default renderer does not use a cover page
 - `templates/`
-  - fixed patient `.docx` template and manifest for the template-driven flow
+  - fixed patient `.docx` template assets kept for compatibility experiments
 - `docs/superpowers/specs/`
   - design docs for larger migrations
 
@@ -31,6 +31,7 @@ A reusable skill for generating patient-facing questionnaire analysis reports wi
 - Product name
 - Region
 - Optional time
+- Optional survey period / issued count / valid count / sample size
 - Patient questionnaire spreadsheet or normalized questionnaire table
 
 ## Typical Outputs
@@ -55,7 +56,7 @@ python3 scripts/parse_questionnaire.py input.xlsx -o output/questionnaire.json
 ### Build payload
 
 ```bash
-python3 scripts/build_payload.py output/questionnaire.json output/report_content.md -o output/report_payload.json --product "厄贝沙坦氢氯噻嗪片" --region "河南"
+python3 scripts/build_payload.py output/questionnaire.json output/report_content.md -o output/report_payload.json --product "厄贝沙坦氢氯噻嗪片" --region "河南" --survey-period "2026年5月1日至2026年5月31日" --issued-count 2250 --valid-count 2205
 ```
 
 ### Render report
@@ -76,23 +77,6 @@ python3 scripts/build_payload.py output/questionnaire.json output/report_content
 python3 scripts/render_from_template.py output/report_payload.v2.json -o output/report_rendered.docx
 ```
 
-### Update Word native charts
-
-```bash
-python3 scripts/update_word_charts.py output/report_rendered.docx output/report_payload.v2.json
-```
-
-## Template-Driven Direction
-
-The repository is being upgraded from direct Word composition to a template-driven flow:
-
-1. define one unified patient template
-2. emit payload v2 with explicit content variables and chart data
-3. fill a fixed `.docx` template
-4. update pre-seeded Word native editable charts
-
-See [references/template-spec.md](references/template-spec.md) and [docs/superpowers/specs/2026-05-14-patient-template-design.md](docs/superpowers/specs/2026-05-14-patient-template-design.md).
-
 ## Doctor vs Patient
 
 - Reused from doctor skill:
@@ -109,10 +93,11 @@ See [references/template-spec.md](references/template-spec.md) and [docs/superpo
 
 - This repository is optimized for patient-facing questionnaire reports, not doctor reports.
 - The legacy workflow is `questionnaire.json -> report_content.md -> report_payload.json -> final artifacts`.
-- The template-driven workflow is `questionnaire.json -> report_content.md -> report_payload.v2.json -> render_from_template.py -> update_word_charts.py`.
-- The target workflow is template-driven and should stop expanding `render_report.py`.
-- The legacy `.docx` output starts from正文首页 and does not generate a cover page.
-- The first template-driven version is intentionally fixed to one committed patient template and one manifest.
+- The payload v2 workflow is `questionnaire.json -> report_content.md -> report_payload.v2.json -> render_from_template.py`.
+- The current patient default output starts from正文首页 and does not generate a cover page.
+- Every chapter 2 item must produce one PNG chart image and one matching inserted chart in the final `.docx`.
+- The introduction should render `报告背景` and `数据来源` subheadings; if survey period / counts are provided, they will be injected into the data-source paragraph.
+- `update_word_charts.py` is kept only as a legacy experiment path and is not part of the default patient workflow.
 
 ## Reusing This Pattern
 

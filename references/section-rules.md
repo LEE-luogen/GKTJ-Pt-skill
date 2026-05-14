@@ -6,7 +6,8 @@
 3. `3、反馈意见分析`
 4. `3.1 积极反馈`
 5. `3.2 待改进反馈`
-6. `4、附件-问卷题目内容`
+6. `4、综合分析与建议`
+7. `5、附件-问卷题目内容`
 
 Do not add, remove, merge, or reorder sections.
 
@@ -20,13 +21,16 @@ Do not add, remove, merge, or reorder sections.
 
 ## Chapter 2 Rules
 - One subsection per question.
-- Subheading format: `· 维度名称`
+- Subheading format: bullet symbol + `维度名称`
 - Title must come from the question meaning, not a direct copy of the question.
+- Subheading must be a concise summary of the question meaning, preferably 4-7 Chinese characters, not exceeding 9 characters.
+- Do not use a full sentence, a long clause, or the original question stem as the subheading.
 - Before writing the paragraph, first choose one primary analysis angle from these 3 preferred types:
   - `conclusion-and-action`
   - `option-by-option-cause`
   - `overall-structure-analysis`
 - These 3 types are the default priority for chapter 2. Each question may randomly use any one of them, but the chosen type must match the percentage structure of that question.
+- Adjacent questions must not use the same opening template or same opening angle category.
 - After deciding the primary analysis angle, classify the data pattern into one of these supporting patterns:
   - overall-recognition
   - conditional-recognition
@@ -42,7 +46,9 @@ Do not add, remove, merge, or reorder sections.
   3. explain patient experience, behaviour, convenience, understanding, or support needs
   4. connect to self-management, education, reminder, or support logic where appropriate
   5. avoid medical proof language
-- Preferred length: 220-320 Chinese characters.
+- Length requirement: 300-350 Chinese characters.
+- If the first draft is shorter than 300 Chinese characters, expand it until the requirement is met.
+- If the first draft is longer than 350 Chinese characters, compress and trim it instead of passing through unchanged.
 - Do not write low-information text like:
   - `A+B很高，C+D很低`
   - `整体较好`
@@ -71,6 +77,12 @@ Do not add, remove, merge, or reorder sections.
   - support needs
 
 ## Chapter 4 Rules
+- `综合分析与建议` should summarize cross-question findings instead of repeating chapter 2 line by line.
+- Each recommendation should contain one title plus one explanatory paragraph.
+
+## Chapter 5 Rules
 - Preserve original question order.
 - Preserve original option meaning.
 - Only organize, do not analyze.
+- Only list `题目 + 选项`.
+- Do not show option percentages in the attachment section.

@@ -13,11 +13,14 @@ def normalize_pct(value: object) -> str:
     if not text:
         return ""
     if text.endswith("%"):
-        return text
+        text = text[:-1].strip()
     try:
-        return f"{float(text) * 100:.2f}%"
+        number = float(text)
+        if number <= 1:
+            number *= 100
+        return f"{number:.2f}%"
     except Exception:
-        return text
+        return f"{text}%"
 
 
 def parse_sheet(path: Path) -> dict:
@@ -38,12 +41,17 @@ def parse_sheet(path: Path) -> dict:
             raw = ws.cell(row, col).value
             if raw in (None, "", "总计"):
                 continue
+            raw_text = str(raw).strip()
             label = str(raw).split(".", 1)[0].strip()
             if label not in list("ABCDEF"):
                 continue
-            text = str(raw).split(".", 1)[1].strip() if "." in str(raw) else str(raw).strip()
+            if "." not in raw_text and raw_text == label:
+                continue
+            text = raw_text.split(".", 1)[1].strip() if "." in raw_text else raw_text
             count = ws.cell(count_row, col).value
             pct = normalize_pct(ws.cell(pct_row, col).value)
+            if text == label and count in (None, "", "None") and pct in ("", "0%", "0.0%", "0.00%"):
+                continue
             options.append(
                 {
                     "label": label,

@@ -6,7 +6,7 @@ description: "Use when generating patient-facing questionnaire analysis reports 
 # GKTJ Patient Survey Report Generator
 
 ## Overview
-This skill generates patient-facing questionnaire analysis reports with a fixed structure, controlled wording, and `.docx` output. The repository is currently migrating from a lightweight direct renderer toward a template-driven patient report workflow with fixed `.docx` templates and Word native editable charts.
+This skill generates patient-facing questionnaire analysis reports with a fixed structure, controlled wording, and `.docx` output. The current default workflow is body-first: no cover page, one image chart per question, and fixed Word typography for patient reports.
 
 ## When to Use
 - Uploaded attachment contains patient questionnaire data, especially `.xlsx`, `.csv`, or copied survey tables.
@@ -21,29 +21,34 @@ Do not use this skill for doctor reports, clinical trial manuscripts, or unstruc
 ## Workflow
 1. Normalize inputs:
    - Required: `品种`, `地区`, questionnaire attachment.
-   - Optional: `时间`, custom execution note, custom output directory.
+   - Optional: `时间`, `问卷收集时间`, `发放问卷数`, `有效问卷数/样本数`, custom execution note, custom output directory.
 2. Parse the questionnaire data first.
    - Use `scripts/parse_questionnaire.py` for spreadsheet inputs.
    - Save structured output as `questionnaire.json` before writing report sections.
 3. Derive one statement-style title per question.
    - These titles are the chapter 2 dimension headings.
+   - Each heading must be a concise summary of the question meaning, preferably 4-7 Chinese characters, not exceeding 9 characters.
+   - Do not copy the full question stem or generate a long sentence-like heading.
 4. Generate report content in this order:
    - `引言`
    - `2、数据信息分析` question by question
    - `3.1 积极反馈`
    - `3.2 待改进反馈`
-   - `4、附件-问卷题目内容`
+   - `4、综合分析与建议`
+   - `5、附件-问卷题目内容`
    - When drafting prose, use the patient expression modules in `references/expression-modules.md`.
+   - In `引言`, default to two subheads: `报告背景` and `数据来源`.
+   - If the user provides questionnaire collection time and counts, make sure they are reflected in the `数据来源` paragraph instead of being omitted.
 5. Build a report payload JSON through a script, not by hand.
    - AI should first write `report_content.md` or `report_content.jsonl`.
    - Use `scripts/build_payload.py` to convert that draft plus `questionnaire.json` into a valid `report_payload.json`.
 6. Render artifacts.
-   - Legacy path: use `scripts/render_report.py` to generate charts, markdown, docx, and a summary JSON.
-   - Target path: fill a fixed `.docx` template and update template-native Word charts.
-   - The template-driven rules live in `references/template-spec.md`.
+   - Use `scripts/render_report.py` for direct payload v1 rendering, or `scripts/render_from_template.py` for payload v2 body-only rendering.
+   - Both current report paths generate PNG chart images and insert them into the report.
+   - Do not generate a cover page.
 7. Verify before delivery.
    - Chart count must equal chapter 2 question count.
-   - Attachment must preserve original question and option meaning.
+   - Attachment must preserve original question and option meaning, but must not show percentages.
    - No absolute efficacy or safety claims.
 
 ## Required Output Rules
@@ -56,6 +61,8 @@ Do not use this skill for doctor reports, clinical trial manuscripts, or unstruc
   - analyze the percentage of major options one by one and explain possible causes
   - analyze the overall percentage structure and summarize the group-level pattern
 - The model may randomly choose any one of the 3 angles question by question, but the chosen angle must still fit the actual data distribution.
+- Adjacent chapter 2 items must not reuse the same opening structure.
+- Each chapter 2 item must be controlled within 300-350 Chinese characters.
 - In chapter 2, always decide the pattern first, then write:
   - overall recognition
   - conditional recognition
@@ -77,13 +84,12 @@ Do not use this skill for doctor reports, clinical trial manuscripts, or unstruc
 - `scripts/build_payload.py`
   - Reads `questionnaire.json` plus structured report content and emits a validated `report_payload.json`.
 - `scripts/render_report.py`
-  - Legacy renderer for the original lightweight flow.
+  - Direct renderer for the current patient body-only flow.
   - Generates markdown, PNG charts, `.docx`, and a summary JSON.
-  - This path is not the long-term solution for customer-template parity.
 - `scripts/render_from_template.py`
-  - Loads the fixed patient `.docx` template and writes structured payload v2 text back into the template.
+  - Renders payload v2 into the same body-only `.docx` structure without a cover page.
 - `scripts/update_word_charts.py`
-  - Updates pre-seeded Word native editable charts inside the rendered `.docx`.
+  - Legacy utility kept only for old editable-chart experiments; not part of the current patient default flow.
 
 ## Expected File Flow
 - Input:
@@ -95,8 +101,8 @@ Do not use this skill for doctor reports, clinical trial manuscripts, or unstruc
 - Output:
   - `report_draft.md`
   - `report_final.md`
-  - `charts/chart_XX.png` for legacy flow only
-  - `report_rendered.docx` for template-driven flow
+  - `charts/chart_XX.png` or `*_charts/chart_XX.png`
+  - `report_rendered.docx`
   - `问卷调研分析报告-{{品种}}-患者端-{{地区}}.docx`
   - `report_summary.json`
 
@@ -106,7 +112,8 @@ Do not use this skill for doctor reports, clinical trial manuscripts, or unstruc
 - Asking the model to handwrite a long `report_payload.json` with many Chinese paragraphs.
 - Turning patient feedback into “证明疗效” or “安全性确证”.
 - Forgetting that every chapter 2 item needs one chart and only one chart.
-- Extending the legacy direct renderer when the request is really about the template-driven workflow.
+- Showing percentages again inside the attachment section.
+- Reintroducing a cover page or editable Word chart path for patient reports.
 
 ## Final Delivery
 Reply with:

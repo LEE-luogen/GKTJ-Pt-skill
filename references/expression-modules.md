@@ -14,6 +14,11 @@ Use these as interchangeable building blocks. Do not paste them mechanically. Th
 
 ## Anti-Pattern Rotation Rule
 When multiple items share the same pattern type (e.g. 6 behavioural-split items), you MUST use different opening modules for adjacent items. Never repeat the same opening module within 4 consecutive items. If you reach the end of the module list, cycle back but change the internal paragraph structure (e.g. start with data → interpretation on one item, start with judgement → data on the next).
+Also avoid repeating the same sentence stem within one report, especially openings such as:
+- `从整体占比结构看`
+- `从本题选项占比看`
+- `从各选项占比看`
+These may still be used, but only as occasional modules, not as the default phrasing pattern.
 
 ## Chapter 2: Preferred Analysis Angles
 
@@ -33,6 +38,11 @@ Opening modules:
 3. 从问卷分布结果判断，该维度的患者状态已有较强指向性，说明……
 4. 根据主要选项的占比高低，可以判断该问题当前最值得关注的结论是……
 5. 本题的数据结构并不分散，说明患者在这一维度上的主要问题或主要优势已经较为明确。
+6. 仅从本题反馈排序就可以看出，患者在这一维度上的主流判断已经较为稳定，后续重点应放在……
+7. 当高占比选项集中指向同一方向时，本题更适合先给出结论，再讨论如何回应患者需求。
+8. 这道题的比例关系已经足以支撑一个明确判断，即患者当前最核心的感受或诉求主要落在……
+9. 从主要反馈集中度来看，本题并不需要平均讨论所有选项，而应优先围绕最具代表性的方向展开。
+10. 如果把本题作为患者管理信号来理解，当前比例结构首先说明的是……
 
 Suggestion modules:
 1. 因此，后续可优先从……入手，通过……这一类可执行方式进行改善或巩固。
@@ -55,6 +65,11 @@ Opening modules:
 3. 若逐项看本题选项占比，可以发现每一类高占比选择背后都有相对清晰的行为逻辑。
 4. 本题更适合逐项理解其占比形成原因，因为不同选项对应的并不是简单好坏，而是不同类型的患者状态。
 5. 从选项分布本身出发，本题需要解释的重点不是谁高谁低，而是这些比例为什么会这样形成。
+6. 若把各个高占比选择拆开来看，本题实际上对应了几种不同的患者处境，需要逐项解释其形成背景。
+7. 本题的关键不在于简单复述排序，而在于说明为什么这些选项会分别聚集到当前比例。
+8. 从患者真实生活场景出发，本题多个主要选项背后往往对应着不同的顾虑、习惯和判断依据。
+9. 这一题更适合按主要选项逐项分析，因为比例差异本身已经提示了不同人群的典型行为路径。
+10. 当几类反馈同时占有一定体量时，本题就不能只下单一结论，而应把各类选择形成原因解释清楚。
 
 Cause modules:
 1. 选择“……”的患者占xx%，这通常说明……
@@ -77,6 +92,11 @@ Opening modules:
 3. 本题更值得关注的是整体分布结构，因为它反映的是患者群体的共性状态，而不仅是某一个选项本身。
 4. 从总体占比格局判断，本题呈现出的核心信息在于患者整体处于怎样的结构状态。
 5. 各选项合并起来观察后，本题更像是在描述患者群体的整体管理面貌，而不是单点问题。
+6. 与其孤立看待某个选项，不如从整体比例关系入手理解本题，因为真正有意义的是患者群体的整体分层。
+7. 本题所揭示的重点不是单一高占比选项，而是不同反馈共同拼出的整体结构特征。
+8. 若从群体画像角度观察，本题比例结构更像是在提示患者当前的总体状态分布，而不只是个别意见。
+9. 本题的数据价值在于整体结构判断，只有把各类比例放在一起看，才能理解患者群体的真实面貌。
+10. 将本题作为整体结构来解读后，可以更直接地看到患者在这一维度上的主流趋势与次级问题。
 
 Structure interpretation modules:
 1. 这一结构说明，患者整体上更偏向……，但同时仍保留一定比例的……
@@ -128,6 +148,20 @@ Pick one.
 ---
 
 ## Chapter 2: Opening Modules
+
+### Additional Opening Pool（补充开头句库）
+Use these to further reduce repetition across one report. Rotate them with the primary-angle modules above.
+
+1. 从本题反馈集中方向判断，患者在这一维度上的真实关注点已经比较清楚，后续分析应围绕这一主线展开。
+2. 把主要选项放在一起比较后可以看到，患者并不是随意作答，而是在用比例差异表达真实体验层级。
+3. 这一题的结果更像是患者日常管理状态的一次切面展示，核心不只是比例高低，而是背后的行为逻辑。
+4. 结合高占比选项与低占比选项的对比，本题实际上反映了患者在该维度上的主流状态与边缘问题并存。
+5. 从患者端视角理解，本题分布已经提供了较完整的信息，足以判断当前最值得重视的体验或障碍所在。
+6. 如果把本题看作患者真实生活中的一个缩影，当前的比例排序已经提示了几类最常见的感受和选择路径。
+7. 本题结果之所以值得关注，在于它把患者最常见的选择顺序清楚地摆了出来，也暴露了后续支持应优先覆盖的人群方向。
+8. 这一题并不是简单的“高低排序”，而是在用不同占比告诉我们患者当前最常见、最稳定、也最需要回应的现实情境。
+9. 从本题数据的主次关系出发，可以更准确地理解患者到底是在认可什么、担心什么，或者卡在什么地方。
+10. 当本题各选项一起观察时，患者群体的真实分层就会比单看某一个高占比选项更加清楚。
 
 ### Overall Recognition（整体认可型）
 Use when patient feedback is predominantly positive on this dimension.
