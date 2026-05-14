@@ -7,9 +7,83 @@ Use these as interchangeable building blocks. Do not paste them mechanically. Th
 - Mechanical wording is not.
 - For chapter 2, do not start by listing A/B/C/D in order unless there is a specific reason.
 - First identify the percentage pattern, then choose the matching opening and explanation style.
+- For chapter 2, prefer these 3 primary analysis angles before falling back to generic pattern writing:
+  - `conclusion-and-action`
+  - `option-by-option-cause`
+  - `overall-structure-analysis`
 
 ## Anti-Pattern Rotation Rule
 When multiple items share the same pattern type (e.g. 6 behavioural-split items), you MUST use different opening modules for adjacent items. Never repeat the same opening module within 4 consecutive items. If you reach the end of the module list, cycle back but change the internal paragraph structure (e.g. start with data → interpretation on one item, start with judgement → data on the next).
+
+## Chapter 2: Preferred Analysis Angles
+
+For each question, choose one of these 3 preferred analysis angles first. Random selection is allowed, but the chosen angle must fit the data pattern and question meaning.
+
+### 1. Conclusion And Action
+Use when the percentage distribution clearly supports a direct judgement and a feasible next-step suggestion.
+
+Required output shape:
+- percentage evidence
+- judgement / conclusion
+- feasible suggestion
+
+Opening modules:
+1. 从本题选项占比看，当前患者反馈已经呈现出较明确的主导方向，可以据此得出……
+2. 结合各选项占比结构，这一题反映出的核心结论比较清晰，重点在于……
+3. 从问卷分布结果判断，该维度的患者状态已有较强指向性，说明……
+4. 根据主要选项的占比高低，可以判断该问题当前最值得关注的结论是……
+5. 本题的数据结构并不分散，说明患者在这一维度上的主要问题或主要优势已经较为明确。
+
+Suggestion modules:
+1. 因此，后续可优先从……入手，通过……这一类可执行方式进行改善或巩固。
+2. 基于这一结果，更可行的做法是围绕……提供针对性支持，而不是泛泛增加信息量。
+3. 从实际管理角度看，建议优先加强……，这样更有可能对应到当前占比最高的患者需求。
+4. 若希望进一步改善这一维度，较现实的路径是通过……来回应当前主要反馈方向。
+5. 围绕这一结论，后续可将患者教育、提醒或随访重点放在……，可操作性更强。
+
+### 2. Option-By-Option Cause
+Use when the question needs explanation of why several major options formed their current proportions.
+
+Required output shape:
+- major options and percentages
+- cause analysis for the main options one by one
+- link back to patient behaviour or understanding
+
+Opening modules:
+1. 从各选项占比看，患者在本题上的选择并非偶然，不同选项背后对应着不同的现实原因。
+2. 本题的分布结构提示，各主要选项之所以形成当前占比，与患者的认知、习惯和生活场景密切相关。
+3. 若逐项看本题选项占比，可以发现每一类高占比选择背后都有相对清晰的行为逻辑。
+4. 本题更适合逐项理解其占比形成原因，因为不同选项对应的并不是简单好坏，而是不同类型的患者状态。
+5. 从选项分布本身出发，本题需要解释的重点不是谁高谁低，而是这些比例为什么会这样形成。
+
+Cause modules:
+1. 选择“……”的患者占xx%，这通常说明……
+2. “……”对应xx%，往往反映出患者在……方面受到……影响。
+3. 另一部分患者集中在“……”（xx%），其背后更可能是……
+4. 相比之下，“……”占xx%，提示这类患者在……方面已有较稳定习惯或明确认知。
+5. 从原因层面看，“……”之所以形成当前比例，往往与……这一现实因素有关。
+
+### 3. Overall Structure Analysis
+Use when the full option distribution needs to be summarized as one overall structural judgement.
+
+Required output shape:
+- summarize the overall distribution
+- identify the dominant structure
+- explain what the structure says about the patient group as a whole
+
+Opening modules:
+1. 从整体占比结构看，本题反映出的并不是单一意见，而是患者群体在这一维度上的整体状态分布。
+2. 如果把本题各选项作为一个整体来看，可以更清楚地看到患者在该维度上的总体特征。
+3. 本题更值得关注的是整体分布结构，因为它反映的是患者群体的共性状态，而不仅是某一个选项本身。
+4. 从总体占比格局判断，本题呈现出的核心信息在于患者整体处于怎样的结构状态。
+5. 各选项合并起来观察后，本题更像是在描述患者群体的整体管理面貌，而不是单点问题。
+
+Structure interpretation modules:
+1. 这一结构说明，患者整体上更偏向……，但同时仍保留一定比例的……
+2. 从群体层面看，该分布呈现出“……”的总体格局，说明……
+3. 这一占比结构反映出患者并未完全走向单一模式，而是形成了以……为主、以……为辅的整体状态。
+4. 综合各项比例后可以看出，当前患者群体在这一维度上的主流状态是……，而边缘问题主要集中在……
+5. 从整体结构意义上说，本题显示出患者在……方面已经形成基本趋势，但距离更理想状态仍有差距。
 
 ---
 
@@ -108,6 +182,18 @@ Use when there are significant pain points or concerns that need highlighting.
 8. 从反馈的痛感强度看，该维度不是个别现象，而是一个在相当比例患者中反复出现的系统性关注点。
 9. 该问题的分布结构提示，不是"有没有问题"的争论，而是"问题有多大范围、影响有多深"的讨论。
 10. 在患者的实际反馈中，该维度的痛点并非边缘性抱怨，而是在日常管理中具有实质性影响的关键障碍。
+
+---
+
+## Chapter 2: Overall Analysis Closing Modules
+
+Use these when the chosen preferred angle is `overall-structure-analysis` or when the paragraph needs a final group-level summary.
+
+1. 从整体上看，这一分布更像是在提示患者群体当前处于“已有基础但不够稳定”的状态。
+2. 若从群体共性角度理解，本题结果说明患者在这一维度上的整体表现仍带有明显层次差异。
+3. 该结果的价值在于，它帮助识别患者群体的主流状态与次级问题，而不是只关注单个极端选项。
+4. 综合来看，本题展示出的并非个别现象，而是患者在该维度上的一类共性管理特征。
+5. 因此，本题更适合作为整体患者教育或支持策略的参考依据，而不是仅作单点判断。
 
 ---
 
@@ -253,6 +339,14 @@ When converting these modules into prompt instructions, explicitly require:
 - Embed percentages naturally
 - Vary opening sentences across adjacent items — do NOT repeat the same module within 4 consecutive paragraphs
 - Choose expressions according to data pattern
+- For chapter 2, randomly prefer one of the 3 primary analysis angles for each question:
+  - `conclusion-and-action`
+  - `option-by-option-cause`
+  - `overall-structure-analysis`
+- If random choice conflicts with the actual data structure, choose the nearest suitable angle instead of forcing it.
+- `conclusion-and-action` must include a feasible suggestion, not only a conclusion.
+- `option-by-option-cause` must explain why the major options formed that distribution.
+- `overall-structure-analysis` must summarize the whole percentage pattern at group level.
 - Avoid repeated paragraph skeletons across all questions
 - Never switch into doctor-viewpoint analysis (no prescribing strategy, risk stratification, or clinical decision path)
 - For introduction, vary the disease-background opening, product relevance sentence, and purpose closing instead of reusing one stock paragraph every time

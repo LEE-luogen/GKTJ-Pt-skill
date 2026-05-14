@@ -1,16 +1,36 @@
 # Report Content And Payload Schema
 
+## Status
+
+This document now defines two states:
+
+- `legacy v1`: current direct-render payload used by `render_report.py`
+- `template-driven v2`: target payload for fixed `.docx` template filling and Word native chart updates
+
+The migration target is `template-driven v2`. New implementation work should not expand `render_report.py` further.
+
 ## Default Workflow
+
 Do not ask the model to handwrite a full `report_payload.json` as the primary path.
 
-Default chain:
+### Legacy v1 chain
+
 1. `scripts/parse_questionnaire.py` -> `questionnaire.json`
 2. AI writes `report_content.md` or `report_content.jsonl`
 3. `scripts/build_payload.py` -> `report_payload.json`
 4. `scripts/render_report.py` -> markdown, charts, docx, summary
 
+### Target v2 chain
+
+1. `scripts/parse_questionnaire.py` -> `questionnaire.json`
+2. AI writes structured patient report content
+3. `scripts/build_payload.py` -> `report_payload.v2.json`
+4. `scripts/render_from_template.py` -> filled `.docx`
+5. `scripts/update_word_charts.py` -> final `.docx` with editable Word native charts
+6. validation -> summary
+
 This avoids quote escaping failures when the content contains long Chinese paragraphs, Chinese quotation marks, English double quotes, or multiple line breaks.
-The default renderer does not create a cover page; it starts directly from the正文首页 with explicit typography rules.
+The new renderer must preserve the fixed patient template instead of reconstructing layout in code.
 
 ## Recommended `report_content.md` Format
 
@@ -70,7 +90,7 @@ unresolved:
 {"type":"negative_feedback","title":"依从性管理仍需加强","body":"正文。"}
 ```
 
-## Resulting `report_payload.json`
+## Legacy v1 `report_payload.json`
 
 ```json
 {
@@ -118,3 +138,18 @@ unresolved:
 - `report_type` defaults to `患者端问卷调研分析报告` if omitted.
 - `time` may be omitted.
 - If a direct JSON payload is used as a fallback path, it must pass `json.loads` validation before rendering.
+
+## Template-Driven v2 Payload
+
+Use the structure in [template-spec.md](./template-spec.md). Key differences from v1:
+
+- top-level `meta`, `template`, `intro`, `chapter2`, `feedback`, `attachment`, `checks`
+- each chapter 2 item carries `question_ref` and `chart_ref`
+- chart data is stored as structured values, not image instructions
+- attachment rendering is template-aware instead of always using the old hardcoded paragraph layout
+
+## Migration Rules
+
+- Do not add new customer-facing fields to legacy v1 unless needed for backward compatibility.
+- All new template work should be modeled in v2 first.
+- The old `render_report.py` remains a legacy renderer until template rendering is proven.
