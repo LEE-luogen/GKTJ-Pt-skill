@@ -1,5 +1,9 @@
 # Template-Driven Patient Report Spec
 
+## Current Status
+
+The template-driven rendering path (`render_from_template.py`) copies and edits the customer DOCX template. It preserves the cover, footer, paragraph formatting, 11 native Word charts, and embedded workbooks. `update_word_charts.py` resolves each chart's workbook through OOXML relationships and updates both chart caches and workbook cells. PNG chart fallback is prohibited.
+
 ## Goal
 
 Upgrade the patient report skill from direct Word composition into a template-driven pipeline:
@@ -83,7 +87,7 @@ Use double-brace placeholders in body text:
 - `{{chapter2.item_01.analysis}}`
 - `{{chart.slot_01.caption}}`
 
-`heading` is the display string as shown in the template, for example `· 用药依从性`.
+`heading` contains title text only, for example `用药依从性`. The template paragraph supplies its own bullet through Word numbering; payload text must not add another bullet.
 
 #### Feedback repeated content
 
@@ -106,9 +110,7 @@ Charts must be Word native editable charts embedded in the template before rende
 
 ### Slot identifiers
 
-- `chart_slot_01`
-- `chart_slot_02`
-- `chart_slot_03`
+- `chart_slot_01` through `chart_slot_11`
 
 ### Slot contract
 
@@ -151,7 +153,7 @@ The new payload is structured around template filling and chart updates rather t
     "items": [
       {
         "slot": "item_01",
-        "heading": "· 用药依从性",
+        "heading": "用药依从性",
         "title": "用药依从性",
         "analysis": "正文",
         "question_ref": "q01",

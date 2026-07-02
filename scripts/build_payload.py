@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import itertools
 import json
 import re
 from pathlib import Path
@@ -10,7 +11,13 @@ DEFAULT_REPORT_TYPE = "患者端问卷调研分析报告"
 CHAPTER2_TITLE_MIN_LEN = 4
 CHAPTER2_TITLE_MAX_LEN = 9
 ANALYSIS_MIN_LEN = 300
-ANALYSIS_MAX_LEN = 350
+ANALYSIS_MAX_LEN = 400
+MAX_QUESTIONS = 11
+BACKGROUND_MIN_LEN = 300
+BACKGROUND_MAX_LEN = 350
+DATA_SOURCE_MIN_LEN = 150
+DATA_SOURCE_MAX_LEN = 200
+PCT_SUM_TOLERANCE = 0.05  # Single-choice percentage sum tolerance
 
 CHAPTER2_TITLE_FALLBACK = [
     (r"用药.*原因|主要原因", "用药原因"),
@@ -133,13 +140,16 @@ def question_options(question: dict) -> list[dict]:
     options = []
     for option in question.get("options", []):
         text = str(option.get("text") or "").strip()
+        label = str(option.get("label") or option.get("code") or "").strip()
         count = option.get("count")
-        pct = normalize_pct(option.get("pct", ""))
-        if text == option.get("label") and count in (None, "", "None") and pct in ("", "0%", "0.0%", "0.00%"):
+        pct = normalize_pct(option.get("pct", option.get("percentage", "")))
+        if label:
+            text = re.sub(rf"^{re.escape(label)}[.\u3001]\s*", "", text)
+        if text == label and count in (None, "", "None") and pct in ("", "0%", "0.0%", "0.00%"):
             continue
         options.append(
             {
-                "label": str(option.get("label", "")).strip(),
+                "label": label,
                 "text": text,
                 "pct": pct,
             }
@@ -249,36 +259,36 @@ def parse_markdown_content(path: Path) -> tuple[dict, dict]:
         if heading:
             level = len(heading.group(1))
             title = normalize_space(heading.group(2))
-            if is_heading(title, [r"引言", r"[一1]、引言"]):
+            if is_heading(title, [r"引言", r"[一1][、.]\s*引言", r"[一1]、引言"]):
                 flush_item()
                 flush_summary_item()
                 current_section = "introduction"
                 continue
-            if is_heading(title, [r"数据信息分析", r"[二2]、数据信息分析"]):
+            if is_heading(title, [r"数据信息分析", r"[二2][、.]\s*数据信息分析", r"[二2]、数据信息分析"]):
                 flush_item()
                 flush_summary_item()
                 current_section = "data_analysis"
                 continue
-            if is_heading(title, [r"反馈意见分析", r"[三3]、反馈意见分析"]):
+            if is_heading(title, [r"反馈意见分析", r"[三3][、.]\s*反馈意见分析", r"[三3]、反馈意见分析"]):
                 flush_item()
                 flush_summary_item()
                 continue
-            if is_heading(title, [r"积极反馈", r"3\.1\s+积极反馈", r"3\.1积极反馈"]):
+            if is_heading(title, [r"积极反馈", r"3[、.]\s*1\s*积极反馈", r"3\.1\s*积极反馈", r"3\.1积极反馈"]):
                 flush_item()
                 flush_summary_item()
                 current_section = "positive_feedback"
                 continue
-            if is_heading(title, [r"待改进反馈", r"3\.2\s+待改进反馈", r"3\.2待改进反馈"]):
+            if is_heading(title, [r"待改进反馈", r"3[、.]\s*2\s*待改进反馈", r"3\.2\s*待改进反馈", r"3\.2待改进反馈"]):
                 flush_item()
                 flush_summary_item()
                 current_section = "negative_feedback"
                 continue
-            if is_heading(title, [r"综合分析与建议", r"[四4]、综合分析与建议"]):
+            if is_heading(title, [r"综合分析与建议", r"[四4][、.]\s*综合分析与建议", r"[四4]、综合分析与建议"]):
                 flush_item()
                 flush_summary_item()
                 current_section = "summary"
                 continue
-            if is_heading(title, [r"附件-问卷题目内容", r"[五5]、附件-问卷题目内容", r"附件"]):
+            if is_heading(title, [r"附件[-—–]问卷题目内容", r"附件", r"[五5][、.]\s*附件[-—–]?\s*问卷题目内容", r"[五5]、附件-问卷题目内容"]):
                 flush_item()
                 flush_summary_item()
                 current_section = "attachment"
@@ -579,7 +589,7 @@ def build_payload_v2(questionnaire: dict, meta: dict, content: dict, cli_args: a
         chapter2_items.append(
             {
                 "slot": f"item_{item['number']:02d}",
-                "heading": f"· {item['title']}",
+                "heading": item["title"],
                 "title": item["title"],
                 "analysis": item["analysis"],
                 "question_ref": f"q{item['number']:02d}",
@@ -587,6 +597,14 @@ def build_payload_v2(questionnaire: dict, meta: dict, content: dict, cli_args: a
                 "chart": {
                     "type": "bar_horizontal",
                     "title": f"图{item['number']} {item['title']}",
+                    "options": [
+                        {
+                            "code": option["label"],
+                            "text": option["text"],
+                            "pct": pct_to_float(option["pct"]),
+                        }
+                        for option in item["options"]
+                    ],
                     "categories": categories,
                     "series": [
                         {
@@ -617,6 +635,8 @@ def build_payload_v2(questionnaire: dict, meta: dict, content: dict, cli_args: a
         },
         "intro": {
             "paragraphs": legacy_payload["introduction"],
+            "background": legacy_payload["introduction"][0] if len(legacy_payload["introduction"]) >= 1 else "",
+            "data_source": legacy_payload["introduction"][1] if len(legacy_payload["introduction"]) >= 2 else "",
         },
         "chapter2": {
             "items": chapter2_items,
@@ -658,14 +678,118 @@ def validate_payload(payload: dict) -> None:
         raise ValueError(f"Payload missing required keys: {', '.join(missing)}")
     if len(payload["data_analysis"]) != len(payload["attachment_questions"]):
         raise ValueError("Payload mismatch: `data_analysis` count must equal `attachment_questions` count.")
+    if not payload.get("summary_recommendations"):
+        raise ValueError("Payload missing summary_recommendations (Chapter 4: 综合分析与建议). Check markdown heading format — must match '四、综合分析与建议' or '综合分析与建议'.")
     for index, item in enumerate(payload["data_analysis"], start=1):
         if not item.get("title") or not item.get("analysis"):
-            raise ValueError(f"data_analysis item {index} missing title or analysis.")
+            raise ValueError(f"Invalid payload. `data_analysis[{index}]` missing title or analysis.")
         title_len = len(str(item["title"]).strip())
         if not CHAPTER2_TITLE_MIN_LEN <= title_len <= CHAPTER2_TITLE_MAX_LEN:
             raise ValueError(f"data_analysis item {index} title must be 4-9 characters (got {title_len}).")
         if not item.get("options"):
             raise ValueError(f"data_analysis item {index} missing options.")
+
+
+def _extract_percentages(text: str) -> list[float]:
+    """Extract percentage values from text (e.g., '49%' → 49.0)."""
+    return [float(m) for m in re.findall(r"(\d+(?:\.\d+)?)%", text)]
+
+
+def _check_intro_word_count(payload: dict, warnings: list[str], errors: list[str]):
+    """Validate intro section word counts."""
+    intro = payload.get("intro", {})
+    # Support both new format (background/data_source) and legacy format (paragraphs)
+    background = intro.get("background", "")
+    data_source = intro.get("data_source", "")
+    if not background and not data_source:
+        paragraphs = intro.get("paragraphs", [])
+        if len(paragraphs) >= 1:
+            background = paragraphs[0]
+        if len(paragraphs) >= 2:
+            data_source = paragraphs[1]
+
+    bg_len = text_len(background)
+    ds_len = text_len(data_source)
+
+    if bg_len < BACKGROUND_MIN_LEN:
+        errors.append(
+            f"报告背景字数不足：{bg_len} 字，最低要求 {BACKGROUND_MIN_LEN} 字"
+        )
+    elif bg_len > BACKGROUND_MAX_LEN:
+        warnings.append(
+            f"报告背景超过推荐字数：{bg_len} 字，推荐 {BACKGROUND_MAX_LEN} 字以内"
+        )
+
+    if ds_len < DATA_SOURCE_MIN_LEN:
+        errors.append(
+            f"数据来源字数不足：{ds_len} 字，最低要求 {DATA_SOURCE_MIN_LEN} 字"
+        )
+    elif ds_len > DATA_SOURCE_MAX_LEN:
+        warnings.append(
+            f"数据来源超过推荐字数：{ds_len} 字，推荐 {DATA_SOURCE_MAX_LEN} 字以内"
+        )
+
+
+def _check_percentages(payload: dict, warnings: list[str], errors: list[str]):
+    """Validate percentage values in chart data."""
+    for idx, item in enumerate(payload["chapter2"].get("items", []), start=1):
+        chart = item.get("chart", {})
+        options = chart.get("options", [])
+
+        # Check each option percentage
+        for opt in options:
+            pct = opt.get("pct")
+            if pct is None:
+                # Try legacy format
+                continue
+            if not (0 <= pct <= 100):
+                errors.append(
+                    f"Q{idx} 选项 {opt.get('code', '?')} 百分比超出范围: {pct}%"
+                )
+
+        # Check single-choice sum (if not explicitly multi-choice)
+        if options and len(options) > 1:
+            total = sum(opt.get("pct", 0) for opt in options)
+            if abs(total - 100) > PCT_SUM_TOLERANCE * 100:
+                # Only warn, don't block (could be multi-choice)
+                warnings.append(
+                    f"Q{idx} 选项百分比总和 {total:.2f}%（可能是多选题）"
+                )
+
+
+def _check_body_percentage_refs(payload: dict, warnings: list[str], errors: list[str]):
+    """Check that percentages mentioned in analysis text exist in the question options."""
+    for idx, item in enumerate(payload["chapter2"].get("items", []), start=1):
+        analysis = item.get("analysis", "")
+        chart = item.get("chart", {})
+        options = chart.get("options", [])
+
+        # Get all valid percentages for this question
+        valid_pcts = set()
+        for opt in options:
+            pct = opt.get("pct")
+            if pct is not None:
+                valid_pcts.add(round(pct, 2))
+        # Narrative analysis commonly cites combined shares (A+B, all
+        # non-leading options, etc.). Treat exact subset sums as valid too.
+        individual = sorted(valid_pcts)
+        for size in range(2, len(individual) + 1):
+            for subset in itertools.combinations(individual, size):
+                valid_pcts.add(round(sum(subset), 2))
+
+        # Extract percentages from analysis text
+        mentioned_pcts = _extract_percentages(analysis)
+
+        # Check each mentioned percentage
+        for pct in mentioned_pcts:
+            pct_rounded = round(pct, 2)
+            if pct_rounded not in valid_pcts:
+                # Check with some tolerance
+                found = any(abs(pct_rounded - vp) < 0.1 for vp in valid_pcts)
+                if not found:
+                    warnings.append(
+                        f"Q{idx} 分析文本中引用 {pct}% 但该题选项中无此百分比"
+                    )
 
 
 def validate_payload_v2(payload: dict) -> None:
@@ -675,21 +799,69 @@ def validate_payload_v2(payload: dict) -> None:
         raise ValueError(f"Payload v2 missing required keys: {', '.join(missing)}")
     items = payload["chapter2"].get("items", [])
     questions = payload["attachment"].get("questions", [])
+
+    # 11-question limit
+    if len(items) > MAX_QUESTIONS:
+        raise ValueError(
+            f"Payload has {len(items)} questions, maximum is {MAX_QUESTIONS}. "
+            f"Template only supports {MAX_QUESTIONS} chart slots."
+        )
+
     if len(items) != len(questions):
         raise ValueError("Payload v2 mismatch: chapter2 item count must equal attachment question count.")
+
+    warnings = []
+    errors = []
+
     for index, item in enumerate(items, start=1):
         if not item.get("chart_ref") or not item.get("question_ref"):
-            raise ValueError(f"chapter2 item {index} missing chart_ref or question_ref.")
+            errors.append(f"chapter2 item {index} missing chart_ref or question_ref.")
+
+        # Chart slot binding check
+        expected_ref = f"chart_slot_{index:02d}"
+        actual_ref = item.get("chart_ref", "")
+        if actual_ref != expected_ref:
+            warnings.append(
+                f"chapter2 item {index} chart_ref is '{actual_ref}', expected '{expected_ref}'"
+            )
+
         title_len = len(str(item.get("title", "")).strip())
         if not CHAPTER2_TITLE_MIN_LEN <= title_len <= CHAPTER2_TITLE_MAX_LEN:
-            raise ValueError(f"chapter2 item {index} title must be 4-9 characters (got {title_len}).")
-        categories = item.get("chart", {}).get("categories", [])
-        series = item.get("chart", {}).get("series", [])
-        if not categories or not series:
-            raise ValueError(f"chapter2 item {index} missing chart categories or series.")
+            errors.append(f"chapter2 item {index} title must be 4-9 characters (got {title_len}).")
+
+        # Check chart data exists (support both new and legacy formats)
+        chart = item.get("chart", {})
+        options = chart.get("options", [])
+        categories = chart.get("categories", [])
+        series = chart.get("series", [])
+        if not options and (not categories or not series):
+            errors.append(f"chapter2 item {index} missing chart data (options or categories/series).")
+
         analysis_len = text_len(str(item.get("analysis", "")))
         if not ANALYSIS_MIN_LEN <= analysis_len <= ANALYSIS_MAX_LEN:
-            raise ValueError(f"chapter2 item {index} analysis must be 300-350 characters.")
+            errors.append(
+                f"chapter2 item {index} analysis must be {ANALYSIS_MIN_LEN}-{ANALYSIS_MAX_LEN} characters (got {analysis_len})."
+            )
+
+    if not payload.get("summary", {}).get("recommendations"):
+        errors.append("Payload v2 missing summary.recommendations (Chapter 4: 综合分析与建议).")
+
+    # Intro word count validation
+    _check_intro_word_count(payload, warnings, errors)
+
+    # Percentage validation
+    _check_percentages(payload, warnings, errors)
+
+    # Body text percentage reference check
+    _check_body_percentage_refs(payload, warnings, errors)
+
+    # Print warnings
+    for w in warnings:
+        print(f"  WARNING: {w}")
+
+    # Raise errors
+    if errors:
+        raise ValueError("Payload v2 validation errors:\n" + "\n".join(f"  - {e}" for e in errors))
 
 
 def main() -> None:

@@ -1,38 +1,58 @@
 {
   "template_id": "patient-unified-v1",
   "template_file": "templates/patient-unified-v1.docx",
-  "max_chart_slots": 10,
+  "version": "v2-customer-template",
+  "max_chart_slots": 11,
+  "cover": {
+    "last_paragraph": 44
+  },
+  "toc": {
+    "insert_after_paragraph": 44,
+    "levels": "1-2"
+  },
   "intro": {
-    "report_background_paragraph": 46,
-    "data_source_paragraph": 48
+    "section_heading_paragraph": 45,
+    "background_heading_paragraph": 46,
+    "background_paragraph": 47,
+    "data_source_heading_paragraph": 48,
+    "data_source_paragraph": 49
   },
   "chapter2": {
-    "section_heading_paragraph": 53,
+    "section_heading_paragraph": 50,
     "blocks": [
-      {"slot": "chart_slot_01", "title_paragraph": 54, "analysis_paragraphs": [56, 57, 58]},
-      {"slot": "chart_slot_02", "title_paragraph": 59, "analysis_paragraphs": [61, 62]},
-      {"slot": "chart_slot_03", "title_paragraph": 63, "analysis_paragraphs": [65, 66]},
-      {"slot": "chart_slot_04", "title_paragraph": 67, "analysis_paragraphs": [69, 70]},
-      {"slot": "chart_slot_05", "title_paragraph": 71, "analysis_paragraphs": [73]},
-      {"slot": "chart_slot_06", "title_paragraph": 74, "analysis_paragraphs": [76]},
-      {"slot": "chart_slot_07", "title_paragraph": 77, "analysis_paragraphs": [78]},
-      {"slot": "chart_slot_08", "title_paragraph": 79, "analysis_paragraphs": [80, 81]},
-      {"slot": "chart_slot_09", "title_paragraph": 82, "analysis_paragraphs": [84]},
-      {"slot": "chart_slot_10", "title_paragraph": 85, "analysis_paragraphs": [86]}
+      {"slot": "chart_slot_01", "title_paragraph": 51, "chart_paragraph": 52, "analysis_paragraph": 53},
+      {"slot": "chart_slot_02", "title_paragraph": 54, "chart_paragraph": 55, "analysis_paragraph": 56},
+      {"slot": "chart_slot_03", "title_paragraph": 57, "chart_paragraph": 58, "analysis_paragraph": 59},
+      {"slot": "chart_slot_04", "title_paragraph": 60, "chart_paragraph": 61, "analysis_paragraph": 62},
+      {"slot": "chart_slot_05", "title_paragraph": 63, "chart_paragraph": 64, "analysis_paragraph": 65},
+      {"slot": "chart_slot_06", "title_paragraph": 66, "chart_paragraph": 67, "analysis_paragraph": 68},
+      {"slot": "chart_slot_07", "title_paragraph": 69, "chart_paragraph": 69, "analysis_paragraph": 70},
+      {"slot": "chart_slot_08", "title_paragraph": 71, "chart_paragraph": 71, "analysis_paragraph": 72},
+      {"slot": "chart_slot_09", "title_paragraph": 73, "chart_paragraph": 74, "analysis_paragraph": 75},
+      {"slot": "chart_slot_10", "title_paragraph": 76, "chart_paragraph": 76, "analysis_paragraph": 77},
+      {"slot": "chart_slot_11", "title_paragraph": 78, "chart_paragraph": 78, "analysis_paragraph": 79}
     ]
   },
   "feedback": {
-    "positive_heading_paragraph": 89,
-    "positive_paragraphs": [90, 91, 92, 93],
-    "negative_heading_paragraph": 94,
-    "negative_paragraphs": [95, 96, 97, 98, 99]
+    "section_heading_paragraph": 81,
+    "positive_heading_paragraph": 82,
+    "positive_paragraphs": [83, 84, 85, 86],
+    "negative_heading_paragraph": 87,
+    "negative_paragraphs": [88, 89, 90, 91]
   },
   "summary": {
-    "section_heading_paragraph": 101,
-    "recommendation_title_paragraphs": [102, 104, 106, 108, 110],
-    "recommendation_body_paragraphs": [103, 105, 107, 109, 111]
+    "section_heading_paragraph": 92,
+    "recommendation_title_paragraphs": [93, 95, 97, 99],
+    "recommendation_body_paragraphs": [94, 96, 98, 100]
   },
   "attachment": {
-    "section_heading_paragraph": 113
+    "section_heading_paragraph": 112,
+    "dynamic": true
+  },
+  "format": {
+    "font_family": "宋体",
+    "chart_font_size_pt": 10,
+    "percentage_format": "0.00%",
+    "heading_numbering_source": "template_w_numPr"
   }
 }

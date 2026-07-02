@@ -18,6 +18,10 @@ Do not add, remove, merge, or reorder sections.
   - introduce 3-4 representative dimensions plus total dimension count when appropriate
   - close with report purpose
 - Avoid doctor language such as prescribing strategy, risk stratification, or clinical decision path.
+- Word count requirements:
+  - 报告背景: 300-350 Chinese characters (error if under 300)
+  - 数据来源: 150-200 Chinese characters (error if under 150)
+- Character counting: exclude spaces, newlines, tabs; include punctuation.
 
 ## Chapter 2 Rules
 - One subsection per question.
@@ -46,9 +50,11 @@ Do not add, remove, merge, or reorder sections.
   3. explain patient experience, behaviour, convenience, understanding, or support needs
   4. connect to self-management, education, reminder, or support logic where appropriate
   5. avoid medical proof language
-- Length requirement: 300-350 Chinese characters.
+- Length requirement: 300-400 Chinese characters.
 - If the first draft is shorter than 300 Chinese characters, expand it until the requirement is met.
-- If the first draft is longer than 350 Chinese characters, compress and trim it instead of passing through unchanged.
+- If the first draft is longer than 400 Chinese characters, compress and trim it instead of passing through unchanged.
+- Target range for drafts: 310-380 characters — this leaves buffer above the 300 minimum and below the 400 maximum enforced by `build_payload.py`.
+- Do NOT rely on post-processing to fix length — aim for the target range in your draft.
 - Do not write low-information text like:
   - `A+B很高，C+D很低`
   - `整体较好`
@@ -58,6 +64,8 @@ Do not add, remove, merge, or reorder sections.
   - a concrete and feasible suggestion
 - If using `option-by-option-cause`, the paragraph must explain why the major options may have formed that distribution, not just restate the data.
 - If using `overall-structure-analysis`, the paragraph must summarize the overall distribution logic of the question instead of discussing isolated options only.
+- Percentage references in analysis text must match actual option percentages.
+- Maximum 11 questions per report (template chart slot limit).
 
 ## Chapter 3 Rules
 - `积极反馈` and `待改进反馈` are thematic summaries.

@@ -430,6 +430,16 @@ def build_intro_sections(payload: dict) -> list[dict]:
         additions.append(f"回收有效问卷{valid_count}份")
     elif sample_size:
         additions.append(f"有效样本数为{sample_size}份")
+    # Deduplicate: skip auto-appending info that already exists in the data source paragraph
+    if additions and data_source_paragraphs:
+        source_text = data_source_paragraphs[0]
+        filtered_additions = []
+        for addition in additions:
+            # Extract key numeric/date fragments for matching
+            key_parts = re.findall(r'[\d]+份|[\d]+月|[\d]+日|[\d]+年|N=\d+', addition)
+            if not key_parts or not any(part in source_text for part in key_parts):
+                filtered_additions.append(addition)
+        additions = filtered_additions
     if additions:
         if data_source_paragraphs:
             data_source_paragraphs[0] = f"{data_source_paragraphs[0].rstrip('。')}。本次调研{'，'.join(additions)}。"
@@ -563,7 +573,7 @@ def summarize(payload: dict, charts_dir: Path, docx_path: Path, out_path: Path):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Render patient survey report artifacts from payload JSON.")
+    parser = argparse.ArgumentParser(description="Render patient survey report from payload JSON.")
     parser.add_argument("payload_json", help="Path to report payload JSON")
     parser.add_argument("--output-dir", required=True, help="Output directory")
     args = parser.parse_args()
@@ -578,13 +588,13 @@ def main():
     for item in payload["data_analysis"]:
         create_chart(charts_dir / f"chart_{item['number']:02d}.png", item["title"], item["options"])
 
-    draft_md = out_dir / "report_draft.md"
-    final_md = out_dir / "report_final.md"
-    write_markdown(payload, draft_md)
-    write_markdown(payload, final_md)
     docx_path = out_dir / f"问卷调研分析报告-{payload['product']}-患者端-{payload['region']}.docx"
     write_docx(payload, docx_path, charts_dir)
-    summarize(payload, charts_dir, docx_path, out_dir / "report_summary.json")
+
+    # Charts are embedded in the docx; remove the temporary PNG files
+    import shutil
+    shutil.rmtree(charts_dir, ignore_errors=True)
+
     print(docx_path)
 
 
